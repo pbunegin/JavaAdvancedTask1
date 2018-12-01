@@ -24,7 +24,7 @@ public class Main {
     }
 
     private static LocalDate generateDate() {
-        int year = (int) (Math.random()*2019);
+        int year = (int) (Math.random()*2+2017);
         int month = (int) (Math.random()*12 + 1);
         int day = (int) (Math.random()*28 + 1);
         return LocalDate.of(year,month,day);
