@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 
-public class Producer implements Runnable{
+public class Producer implements Runnable {
     private String ad;
     private LocalDate date;
     private Hotel hotel;
@@ -12,10 +12,12 @@ public class Producer implements Runnable{
 
     @Override
     public void run() {
-        for (int i = 0; i < 5; i++) {
-            hotel.put("request#" + i,Thread.currentThread().getName());
+        int orderNumber;
+        while ((orderNumber = hotel.getOrderNumber()) < 15) {
+            String request = "request#" + orderNumber;
+            hotel.put(request);
+            System.out.println(Thread.currentThread().getName() +
+                    ": отпралено " + request);
         }
     }
-
-
 }

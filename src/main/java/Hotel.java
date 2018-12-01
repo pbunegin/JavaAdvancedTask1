@@ -3,9 +3,8 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class Hotel {
-    private int countRequest;
+    private static int orderNumber = 0;
     private Queue<String> requests = new PriorityQueue<>();
-
 
     public static void main(String[] args) {
         Hotel hotel = new Hotel();
@@ -21,15 +20,23 @@ public class Hotel {
         };
 
         for (int i = 0; i < producers.length; i++) {
-            new Thread(producers[i], String.valueOf(i));
+            new Thread(producers[i], "Producer#" + i).start();
         }
         for (int i = 0; i < bookers.length; i++) {
-            new Thread(bookers[i], String.valueOf(i));
+            new Thread(bookers[i], "Booker#" + i).start();
         }
     }
 
-    public synchronized void put(String request, String name){
-        while (countRequest >= 5){
+    public synchronized int getOrderNumber() {
+        return orderNumber++;
+    }
+
+    public synchronized int quantityOfOrders() {
+        return orderNumber;
+    }
+
+    public synchronized void put(String request){
+        while (requests.size() >= 5){
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -37,30 +44,19 @@ public class Hotel {
             }
         }
         requests.offer(request);
-        countRequest++;
-        System.out.println("Producer #" + name +
-                ": отпралено" + request);
-        notify();
+        notifyAll();
     }
 
-    public synchronized String get(String name){
-        while (countRequest < 1){
+    public synchronized String get(){
+        while (requests.size() < 1){
             try {
                 wait();
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
         }
-        countRequest--;
-        String request = requests.peek();
-        System.out.println("booker #" + name + ": получено " + request);
-        try {
-            Thread.currentThread().wait(5000);
-        } catch (InterruptedException e) {
-            System.out.println(e.getMessage());
-        }
-        System.out.println("booker #" + name + ": обработано " + request);
-        notify();
+        String request = requests.poll();
+        notifyAll();
         return request;
     }
 }

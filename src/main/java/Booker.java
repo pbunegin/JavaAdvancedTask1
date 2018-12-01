@@ -8,6 +8,14 @@ public class Booker implements Runnable {
 
     @Override
     public void run() {
-            hotel.get(Thread.currentThread().getName());
+        String request;
+        while (hotel.quantityOfOrders() < 15 && (request = hotel.get()) != null)
+            try {
+                System.out.println(Thread.currentThread().getName() + ": получено " + request);
+                Thread.sleep(5000);
+                System.out.println(Thread.currentThread().getName() + ": обработано " + request);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
     }
 }
