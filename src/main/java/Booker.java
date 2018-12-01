@@ -9,13 +9,15 @@ public class Booker implements Runnable {
     @Override
     public void run() {
         String request;
-        while (hotel.quantityOfOrders() < 15 && (request = hotel.get()) != null)
+        while ((request = hotel.get()) != null) {
+                String nameBooker = Thread.currentThread().getName();
+                System.out.println(nameBooker + ": получено " + request);
             try {
-                System.out.println(Thread.currentThread().getName() + ": получено " + request);
                 Thread.sleep(5000);
-                System.out.println(Thread.currentThread().getName() + ": обработано " + request);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
+                System.out.println(nameBooker + ": обработано " + request);
+        }
     }
 }
