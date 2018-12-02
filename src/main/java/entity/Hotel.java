@@ -1,3 +1,5 @@
+package entity;
+
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -18,9 +20,7 @@ public class Hotel {
     }
 
     public synchronized String get(){
-        while (requests.size() < 1){
-            if (orderNumber >= 15)
-                return null;
+        while (requests.size() < 1 && orderNumber < 15){
             try {
                 wait();
             } catch (InterruptedException e) {

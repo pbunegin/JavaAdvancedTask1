@@ -1,3 +1,5 @@
+package entity;
+
 public class Booker implements Runnable {
     private Hotel hotel;
 

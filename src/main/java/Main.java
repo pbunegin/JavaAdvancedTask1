@@ -1,3 +1,7 @@
+import entity.Booker;
+import entity.Hotel;
+import entity.Producer;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
