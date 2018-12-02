@@ -2,9 +2,10 @@ package entity;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Hotel {
-    private static int orderNumber = 0;
+    private AtomicInteger orderNumber = new AtomicInteger(0);
     private Queue<String> requests = new PriorityQueue<>();
 
     public synchronized void put(String request){
@@ -20,7 +21,7 @@ public class Hotel {
     }
 
     public synchronized String get(){
-        while (requests.size() < 1 && orderNumber < 15){
+        while (requests.size() < 1 && orderNumber.get() < 15){
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -32,7 +33,7 @@ public class Hotel {
         return request;
     }
 
-    public synchronized int getOrderNumber() {
-        return orderNumber++;
+    public int getOrderNumber() {
+        return orderNumber.getAndIncrement();
     }
 }
