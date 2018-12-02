@@ -3,27 +3,16 @@ import entity.Hotel;
 import entity.Producer;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         Hotel hotel = new Hotel();
-        List<Producer> producers = new ArrayList<>();
-        List<Booker> bookers = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
-            producers.add(new Producer(generateDate(), hotel));
+            new Thread(new Producer(generateDate(),hotel), "Producer#" + i).start();
         }
         for (int i = 0; i < 6; i++) {
-            bookers.add(new Booker(hotel));
-        }
-
-        for (int i = 0; i < producers.size(); i++) {
-            new Thread(producers.get(i), "Producer#" + i).start();
-        }
-        for (int i = 0; i < bookers.size(); i++) {
-            new Thread(bookers.get(i), "Booker#" + i).start();
+            new Thread(new Booker(hotel), "Booker#" + i).start();
         }
     }
 
