@@ -11,15 +11,17 @@ public class Booker implements Runnable {
     @Override
     public void run() {
         String request;
-        while ((request = hotel.get()) != null) {
-                String nameBooker = Thread.currentThread().getName();
-                System.out.println(nameBooker + ": получено " + request);
+        while (!hotel.isStop()) {
+            if ((request = hotel.get()) == null)
+                continue;
+            String nameBooker = Thread.currentThread().getName();
+            System.out.println(nameBooker + ": получено " + request);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
-                System.out.println(nameBooker + ": обработано " + request);
+            System.out.println(nameBooker + ": обработано " + request);
         }
     }
 }
