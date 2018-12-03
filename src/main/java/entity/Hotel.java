@@ -2,15 +2,24 @@ package entity;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Hotel {
-    private AtomicInteger orderNumber = new AtomicInteger(0);
+    private final static int LIMIT_REQUEST = 15;
+    private final static int MAXIMUM_QUEUE_SIZE = 5;
+    private final static int MINIMUM_QUEUE_SIZE = 1;
+
+    private volatile int orderNumber = 0;
     private Queue<String> queue = new LinkedList<>();
-    private boolean stop = false;
+    private boolean stopBooker = false;
+    private boolean stopProducer = false;
 
     public synchronized void put(String request) {
-        while (queue.size() >= 5) {
+        while (queue.size() >= MAXIMUM_QUEUE_SIZE) {
+            if (orderNumber >= LIMIT_REQUEST) {
+                stopProducer = true;
+                notifyAll();
+                return;
+            }
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -18,13 +27,13 @@ public class Hotel {
             }
         }
         queue.offer(request);
-        notifyAll();
+        notify();
     }
 
     public synchronized String get() {
-        while (queue.size() < 1) {
-            if (orderNumber.get() >= 15) {
-                stop = true;
+        while (queue.size() < MINIMUM_QUEUE_SIZE) {
+            if (orderNumber >= LIMIT_REQUEST) {
+                stopBooker = true;
                 break;
             }
             try {
@@ -34,15 +43,21 @@ public class Hotel {
             }
         }
         String request = queue.poll();
-        notifyAll();
+        notify();
         return request;
     }
 
-    public int getOrderNumber() {
-        return orderNumber.getAndIncrement();
+    public synchronized int getOrderNumber() {
+        int oldOrderNumber = orderNumber;
+        orderNumber = oldOrderNumber + 1;
+        return oldOrderNumber;
     }
 
-    public boolean isStop() {
-        return stop;
+    public boolean isStopBooker() {
+        return stopBooker;
+    }
+
+    public boolean isStopProducer() {
+        return stopProducer;
     }
 }

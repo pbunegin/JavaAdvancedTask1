@@ -14,7 +14,8 @@ public class Producer implements Runnable {
     @Override
     public void run() {
         int orderNumber;
-        while ((orderNumber = hotel.getOrderNumber()) < 15) {
+        while (!hotel.isStopProducer()) {
+            orderNumber = hotel.getOrderNumber();
             String request = "request#" + orderNumber + " от " + date;
             hotel.put(request);
             System.out.println(Thread.currentThread().getName() +
