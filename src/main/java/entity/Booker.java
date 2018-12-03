@@ -16,11 +16,11 @@ public class Booker implements Runnable {
                 continue;
             String nameBooker = Thread.currentThread().getName();
             System.out.println(nameBooker + ": получено " + request);
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                System.out.println(e.getMessage());
-//            }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
             System.out.println(nameBooker + ": обработано " + request);
         }
     }

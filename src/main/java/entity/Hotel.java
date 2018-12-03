@@ -4,35 +4,34 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Hotel {
-    private final static int LIMIT_REQUEST = 15;
+    private final static int LIMIT_REQUESTS = 15;
     private final static int MAXIMUM_QUEUE_SIZE = 5;
     private final static int MINIMUM_QUEUE_SIZE = 1;
 
     private volatile int orderNumber = 0;
     private Queue<String> queue = new LinkedList<>();
-    private boolean stopBooker = false;
-    private boolean stopProducer = false;
+    private volatile boolean stopBooker = false;
+    private volatile boolean stopProducer = false;
 
     public synchronized void put(String request) {
         while (queue.size() >= MAXIMUM_QUEUE_SIZE) {
-            if (orderNumber >= LIMIT_REQUEST) {
-                stopProducer = true;
-                notifyAll();
-                return;
-            }
             try {
                 wait();
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
         }
+        if (orderNumber >= LIMIT_REQUESTS) {
+            stopProducer = true;
+            return;
+        }
         queue.offer(request);
-        notify();
+        notifyAll();
     }
 
     public synchronized String get() {
         while (queue.size() < MINIMUM_QUEUE_SIZE) {
-            if (orderNumber >= LIMIT_REQUEST) {
+            if (orderNumber >= LIMIT_REQUESTS) {
                 stopBooker = true;
                 break;
             }
@@ -43,7 +42,7 @@ public class Hotel {
             }
         }
         String request = queue.poll();
-        notify();
+        notifyAll();
         return request;
     }
 
